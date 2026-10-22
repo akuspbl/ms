@@ -1,0 +1,13 @@
+{
+  "name": "mishland-3d",
+  "version": "1.0.0",
+  "description": "Мишлэнд 3D: День Рождения Миши и Друзей — Приключение и Викторина",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo 'Static build ready'"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

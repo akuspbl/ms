@@ -5,31 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Мишлэнд 3D: День Рождения Миши и Друзей — Приключение и Викторина</title>
   <link rel="stylesheet" href="css/styles.css?v=5" />
-  <!-- Three.js r128 with fallback CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
-  <script>
-    if (typeof THREE === 'undefined') {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"><\\/script>');
-    }
-  <\/script>
-  <!-- MQTT over WebSockets for Cross-Device Online Multiplayer (Phones, Tablets, PCs) -->
-  <script src="https://unpkg.com/mqtt@5.3.5/dist/mqtt.min.js"><\/script>
-  <script>
-    if (typeof mqtt === 'undefined') {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/mqtt@5.3.5/dist/mqtt.min.js"><\\/script>');
-    }
-  <\/script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/mqtt@5.3.5/dist/mqtt.min.js"></script>
 </head>
 <body>
-  <!-- 3D Studio PBR Viewport -->
   <div id="canvas-container" title="Вращайте карту мышью или пальцем, масштабируйте колесом или щипком, нажимайте по 3D-локациям!"></div>
-
-  <!-- 3D Hover Tooltip -->
   <div id="map-hover-tooltip"></div>
-
-  <!-- Zero-Occlusion Peripheral HUD -->
   <div id="hud-layer">
-    <!-- TOP BAR -->
     <header id="top-bar" class="glass-panel">
       <div class="brand-block">
         <div class="brand-logo">🎂</div>
@@ -41,8 +23,6 @@
           </span>
         </div>
       </div>
-
-      <!-- Candles & Score -->
       <div class="top-stats">
         <div class="stat-pill" title="Зажжённые свечи">
           <span>🕯️</span>
@@ -54,8 +34,6 @@
           <span id="hud-team-score" class="val">0</span>
         </div>
       </div>
-
-      <!-- Zero-Occlusion Camera, Physics & UI Controls -->
       <div class="camera-controls">
         <button class="cam-btn active" data-cam-mode="overview" title="Весь остров">🗺️ Карта</button>
         <button class="cam-btn" data-cam-mode="location" title="Приблизить локацию">📍 Вблизи</button>
@@ -66,15 +44,11 @@
         <button class="cam-btn" id="btn-reset-game" title="Начать заново">🔄</button>
       </div>
     </header>
-
-    <!-- MOBILE FLOATING ACTION BAR (Phone / Tablet Quick Toggles) -->
     <div id="mobile-hud-toggles">
       <button type="button" class="mobile-toggle-btn active" id="btn-mobile-story">📜 Игра</button>
       <button type="button" class="mobile-toggle-btn" id="btn-mobile-maponly">🗺️ 3D-Карта</button>
       <button type="button" class="mobile-toggle-btn" id="btn-mobile-players">👥 Игроки</button>
     </div>
-
-    <!-- LEFT DOCK: Players Only -->
     <aside id="left-dock" class="glass-panel">
       <div>
         <div class="dock-section-title">
@@ -83,36 +57,25 @@
         </div>
         <div id="hud-players-list" class="players-list"></div>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-          <button class="btn-secondary" id="btn-open-invite-left" style="flex:1;font-size:13px;padding:9px 10px;">
-            📲 QR / Ссылка
-          </button>
-          <button class="btn-secondary" id="btn-open-friend-tab" style="flex:1;font-size:13px;padding:9px 10px;">
-            ➕ Вкладка
-          </button>
+          <button class="btn-secondary" id="btn-open-invite-left" style="flex:1;font-size:13px;padding:9px 10px;">📲 QR / Ссылка</button>
+          <button class="btn-secondary" id="btn-open-friend-tab" style="flex:1;font-size:13px;padding:9px 10px;">➕ Вкладка</button>
         </div>
       </div>
     </aside>
-
-    <!-- RIGHT DOCK: Story Scene, Choices, 4-Option Quiz, Word/Number Riddles & Special Bonus Zones -->
     <main id="right-dock" class="glass-panel">
       <div id="hud-story-content" style="display:flex;flex-direction:column;gap:12px;"></div>
     </main>
-
-    <!-- BOTTOM EVENT TICKER -->
     <footer id="bottom-bar" class="glass-panel">
       <span style="color:#fbbf24;font-weight:800;">📡</span>
       <span id="hud-latest-event" style="color:#f8fafc;font-weight:600;">Добро пожаловать на День Рождения Миши!</span>
     </footer>
   </div>
-
-  <!-- MULTIPLAYER & MOBILE/TABLET INVITE MODAL -->
   <div id="invite-modal" style="display:none;">
     <div class="lobby-card" style="max-width:480px;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
         <h2 style="font-size:20px;font-weight:800;color:#fbbf24;">📲 Вход с телефона</h2>
         <button type="button" id="btn-close-invite" class="btn-secondary" style="padding:6px 13px;font-size:15px;">✕</button>
       </div>
-
       <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:rgba(15,23,42,0.85);padding:14px;border-radius:16px;border:1px solid rgba(56,189,248,0.45);">
         <div id="invite-qr-box" style="background:#fff;padding:8px;border-radius:12px;width:136px;height:136px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:0 auto;">
           <img id="invite-qr-img" alt="QR-код комнаты" style="width:120px;height:120px;display:block;" />
@@ -136,77 +99,48 @@
       </div>
     </div>
   </div>
-
-  <!-- MULTI-DEVICE & MULTI-TAB CHARACTER SELECTION MODAL (Lobby) -->
   <div id="lobby-modal">
     <div class="lobby-card" style="max-width:760px;">
       <div class="lobby-hero">
         <div class="lobby-hero-icon">🐻🎂</div>
         <div style="flex:1;">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-            <h1 style="font-size:24px;font-weight:900;color:#fff;">
-              Мишлэнд 3D: День Рождения!
-            </h1>
+            <h1 style="font-size:24px;font-weight:900;color:#fff;">Мишлэнд 3D: День Рождения!</h1>
             <div style="display:flex;align-items:center;gap:6px;background:rgba(56,189,248,0.2);border:1px solid rgba(56,189,248,0.5);padding:5px 12px;border-radius:999px;font-size:13px;">
               <span>🌐 Комната:</span>
               <strong id="lobby-room-badge" style="color:#38bdf8;">MISHA</strong>
             </div>
           </div>
-          <p style="font-size:14.5px;color:#e2e8f0;margin-top:4px;">
-            Выберите героя, укажите пол и введите имя. Зажгите все свечи на праздничном торте!
-          </p>
+          <p style="font-size:14.5px;color:#e2e8f0;margin-top:4px;">Выберите героя, укажите пол и введите имя. Зажгите все свечи на праздничном торте!</p>
         </div>
       </div>
-
       <div>
-        <div style="font-size:14px;font-weight:800;color:#fbbf24;margin-bottom:8px;">
-          1. Выберите героя:
-        </div>
+        <div style="font-size:14px;font-weight:800;color:#fbbf24;margin-bottom:8px;">1. Выберите героя:</div>
         <div id="lobby-char-grid" class="char-grid"></div>
       </div>
-
       <div id="lobby-name-error" class="feedback-banner error" style="display:none;"></div>
-
       <div class="lobby-form-row">
         <div class="lobby-gender-col">
-          <div style="font-size:14px;font-weight:800;color:#f472b6;margin-bottom:6px;">
-            2. Ваш пол:
-          </div>
+          <div style="font-size:14px;font-weight:800;color:#f472b6;margin-bottom:6px;">2. Ваш пол:</div>
           <div style="display:flex;gap:8px;">
-            <button type="button" id="gender-btn-female" class="btn-secondary lobby-gender-btn">
-              👩 Дама
-            </button>
-            <button type="button" id="gender-btn-male" class="btn-secondary lobby-gender-btn">
-              👨 Мужчина
-            </button>
+            <button type="button" id="gender-btn-female" class="btn-secondary lobby-gender-btn">👩 Дама</button>
+            <button type="button" id="gender-btn-male" class="btn-secondary lobby-gender-btn">👨 Мужчина</button>
           </div>
         </div>
-
         <div class="lobby-name-col">
-          <div style="font-size:14px;font-weight:800;color:#38bdf8;margin-bottom:6px;">
-            3. Ваше имя:
-          </div>
+          <div style="font-size:14px;font-weight:800;color:#38bdf8;margin-bottom:6px;">3. Ваше имя:</div>
           <div class="lobby-join-controls">
-            <input
-              type="text"
-              id="lobby-custom-name"
-              class="puzzle-input"
-              placeholder="Ваше имя..."
-            />
-            <button id="btn-join-game" class="btn-primary">
-              👑 Играть за Мишу
-            </button>
+            <input type="text" id="lobby-custom-name" class="puzzle-input" placeholder="Ваше имя..." />
+            <button id="btn-join-game" class="btn-primary">👑 Играть за Мишу</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Scripts: standalone questions file first, then game data, multiplayer sync, 3D engine, and app controller -->
-  <script src="js/questions.js?v=5"><\/script>
-  <script src="js/data.js?v=5"><\/script>
-  <script src="js/sync.js?v=5"><\/script>
-  <script src="js/scene3d.js?v=5"><\/script>
-  <script src="js/app.js?v=5"><\/script>
+  <script src="js/questions.js?v=5"></script>
+  <script src="js/data.js?v=5"></script>
+  <script src="js/sync.js?v=5"></script>
+  <script src="js/scene3d.js?v=5"></script>
+  <script src="js/app.js?v=5"></script>
 </body>
 </html>
